@@ -1,0 +1,4 @@
+name: bch_balances
+version: "1.0.0"
+config-version: 2
+profile: bch_balances

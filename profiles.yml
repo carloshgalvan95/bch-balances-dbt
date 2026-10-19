@@ -1,0 +1,11 @@
+bch_balances:
+  target: dev
+  outputs:
+    dev:
+      type: bigquery
+      method: oauth
+      project: "{{ env_var('DBT_GCP_PROJECT') }}"
+      dataset: "{{ env_var('DBT_STAGING_DATASET') }}"
+      location: "{{ env_var('DBT_LOCATION') }}"
+      threads: 4
+      maximum_bytes_billed: 27000000000

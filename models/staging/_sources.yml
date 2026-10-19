@@ -1,0 +1,6 @@
+sources:
+  - name: crypto_bitcoin_cash
+    database: bigquery-public-data
+    tables:
+      - name: transactions
+        description: "Bitcoin Cash transactions, public dataset in US, partitioned by block_timestamp_month. Filter on that column to prune partitions."

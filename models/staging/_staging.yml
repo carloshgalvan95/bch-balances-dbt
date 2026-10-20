@@ -1,0 +1,14 @@
+models:
+  - name: stg_transactions
+    description: "Bitcoin Cash transactions in the last three months of available data: block_timestamp in [window_end_date - 3 months, window_end_date + 1 day) UTC. window_end_date defaults to 2024-05-13, the last block date in the public source; override with --vars. One row per transaction."
+    columns:
+      - name: hash
+        quote: true
+        description: "Transaction hash. Grain of this table."
+        data_tests:
+          - unique
+          - not_null
+      - name: is_coinbase
+        description: "True for coinbase transactions. Drives the coinbase exclusion in the mart."
+        data_tests:
+          - not_null

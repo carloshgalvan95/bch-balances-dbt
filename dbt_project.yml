@@ -7,3 +7,5 @@ vars:
 models:
   bch_balances:
     +materialized: table
+    marts:
+      +schema: "{{ env_var('DBT_MART_DATASET') }}"

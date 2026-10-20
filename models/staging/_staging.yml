@@ -8,6 +8,12 @@ models:
         data_tests:
           - unique
           - not_null
+      - name: block_timestamp
+        description: "Block time in UTC. The exact window filter runs on this column."
+      - name: inputs
+        description: "Repeated record. Each input spends an earlier output, named by spent_transaction_hash and spent_output_index. The mart uses these keys and the input addresses."
+      - name: outputs
+        description: "Repeated record with index, addresses and value. The mart sums the value of outputs not spent in the window."
       - name: is_coinbase
         description: "True for coinbase transactions. Drives the coinbase exclusion in the mart."
         data_tests:

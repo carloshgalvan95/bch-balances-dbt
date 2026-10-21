@@ -2,3 +2,10 @@ name: bch_balances
 version: "1.0.0"
 config-version: 2
 profile: bch_balances
+vars:
+  window_end_date: "2024-05-13"
+models:
+  bch_balances:
+    +materialized: table
+    marts:
+      +schema: "{{ env_var('DBT_MART_DATASET') }}"

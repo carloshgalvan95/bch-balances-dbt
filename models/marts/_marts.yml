@@ -1,0 +1,13 @@
+models:
+  - name: address_balances_window
+    description: "One row per address that appears in the three-month window on an output or an input, excluding addresses that received a coinbase output in the window. balance_window comes from window outputs only: the value of the address's window outputs that no transaction in the window spends. 0 means nothing received and unspent in the window, not an empty wallet: the address may hold coins received before the window. The window ends on the last block of the public source, so this is the unspent value of coins created in the window as of that last block (2024-05-13 23:57:05 UTC) with the default window_end_date; an earlier override breaks that equality. It is not the full balance. A multi-address output is credited in full to each address. Outputs with an empty addresses array are dropped."
+    columns:
+      - name: address
+        description: "Address seen in the window on an output or an input. Grain of this table."
+        data_tests:
+          - unique
+          - not_null
+      - name: balance_window
+        description: "Sum of unspent window output value, from window outputs only; 0 if the address has none (fully spent or input-only). Unit of the source value column."
+        data_tests:
+          - not_null

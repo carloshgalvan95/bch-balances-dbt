@@ -1,0 +1,56 @@
+name: dbt ci
+
+# Runs the PR's code with a read-only token. Never pull_request_target:
+# it would run PR code with this repo's write token and OIDC access.
+# Default activity types: opened, synchronize, reopened.
+on:
+  pull_request:
+    branches: [main]
+
+# Read the code and request an OIDC token. Everything else is none.
+permissions:
+  contents: read
+  id-token: write
+
+# A new push to the same PR cancels the older run.
+concurrency:
+  group: ci-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  dbt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DBT_PROFILES_DIR: .
+      DBT_GCP_PROJECT: ${{ vars.DBT_GCP_PROJECT }}
+      DBT_STAGING_DATASET: ${{ vars.DBT_STAGING_DATASET }}
+      DBT_MART_DATASET: ${{ vars.DBT_MART_DATASET }}
+      DBT_LOCATION: ${{ vars.DBT_LOCATION }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Keyless: GitHub OIDC token exchanged for a short-lived dbt-runner token.
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@7c6bc770dae815cd3e89ee6cdf493a5fab2cc093 # v3.0.0
+        with:
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_SA_EMAIL }}
+
+      - name: Set up Python
+        uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.txt
+
+      - name: Install pinned dbt
+        run: pip install -r requirements.txt
+
+      # Models and tests in DAG order; a failed test skips its children.
+      - name: dbt build
+        run: dbt build
+

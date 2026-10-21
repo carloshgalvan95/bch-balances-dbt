@@ -114,9 +114,9 @@ To use another window: `dbt build --vars '{window_end_date: "2024-05-13"}'`.
 
 ## Verification
 
-- First CI run, 39369918896 (pull request #1): success in 1m22s. From the dbt log (converted from GiB): staging 6.5M rows, 19.5 GB. Mart 5.8M rows, 4.1 GB. PASS=10, ERROR=0.
+- First CI run (pull request #1): passed in 1m22s. dbt log: staging 6.5M rows, 18.2 GiB; mart 5.8M rows, 3.8 GiB; PASS=10, ERROR=0.
 - The log showed models only in `bch_staging` and `bch_mart`, no dataset creation, no 403, no stored test failures.
-- Second CI run, 39370456130 (new push to the same pull request): success in 1m15s.
+- Second CI run (new push to the same pull request): passed in 1m15s.
 
 ## Outputs and GitHub Variables
 
@@ -164,4 +164,8 @@ dbt creates only tables in the two Terraform datasets. Remove them with the Tear
 
 ## Limitations and next steps
 
-- `store_failures` stays off: it would need a dataset Terraform does not create.
+- No SQL lint. Next step for a team: SQLFluff and dbt-checkpoint in pre-commit and CI (not built here).
+- No slim CI: every pull request runs a full `dbt build`. Next step for a team: build only changed models with `state:modified+`, deferring to a saved manifest (not built here).
+- No deploy on merge and no per-PR dataset: CI runs only on pull requests to `main` and builds into the project's two datasets. Next step for a team: a dev dataset per pull request, and deploy dev, then prd, on merge, as in the Part 1 design (not built here).
+- No orchestration or schedule: dbt runs by hand or in CI. Next step for a team: a scheduled run in Managed Airflow, as in the Part 1 design (not built here).
+- Failed test rows are not stored (`store_failures` is off). Storing them would need a new dataset, and the `dbt-runner` service account cannot create datasets. Next step for a team: create a dataset for test failures in Terraform and set `store_failures` (not built here).

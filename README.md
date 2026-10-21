@@ -53,6 +53,7 @@ flowchart LR
 - One step: `dbt build`. A failed test skips the models after it.
 - Timeout 20 minutes. One run per pull request; a new push cancels the older run.
 - CI on pull requests from forks stops at the Google auth step: fork pull requests get a read-only token and no OIDC token, a deliberate Workload Identity Federation control.
+- GitHub disables Actions on new forks by default. In a fork, enable them in the Actions tab before opening a pull request.
 
 ## Assumptions
 
@@ -107,6 +108,8 @@ Run:
 ```bash
 dbt build
 ```
+
+Expected: the run ends with `PASS=10` and `ERROR=0`, as in the first CI run under Verification.
 
 `profiles.yml` is in the repo. It uses `method: oauth` and reads only these variables. There are no defaults, so a missing variable fails fast.
 
